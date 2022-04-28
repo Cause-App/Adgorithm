@@ -1,0 +1,43 @@
+\documentclass[12pt]{article}
+\usepackage[sc]{mathpazo}
+\usepackage[T1]{fontenc}
+\linespread{1.05}
+\usepackage{microtype}
+\usepackage[english]{babel}
+\usepackage[a4paper,left=20mm,right=30mm,headheight=3cm,top=3cm,bottom=3cm,footskip=1.5cm]{geometry}
+\usepackage{titlesec}
+\usepackage{fancyhdr}
+\usepackage{hyperref}
+\usepackage{titling}
+\usepackage{blindtext}
+
+\newcommand{\mytitle}{Targeted Advertising With Total User Privacy}
+
+\pagestyle{fancy}
+\fancyhf{}
+\rhead{CAUSE}
+\lhead{\mytitle}
+\rfoot{Page \thepage}
+
+\setlength{\droptitle}{-5em}
+\pretitle{\begin{center}\Huge\bfseries}
+\posttitle{\end{center}}
+\title{\mytitle}
+
+\author{
+\textsc{Morgan Saville} \\[1ex] 
+\normalsize CAUSE \\ 
+\normalsize \href{morgan@cause.cx}{morgan@cause.cx} \\
+}
+\date{}
+
+\begin{document}
+\clearpage\maketitle
+\thispagestyle{empty}
+\begin{abstract}
+\bfseries
+\input{abstract.tex}
+\end{abstract}
+\vspace{2em}
+\input{introduction.tex}
+\end{document}
