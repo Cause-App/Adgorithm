@@ -1,9 +1,10 @@
 logs
 /.vscode
-*checkpoints
+*logs
 *.log
 *.aux
 _minted-main
 *.out
 *.zip
+clicks.csv
 __pycache__
