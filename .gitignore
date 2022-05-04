@@ -1,6 +1,6 @@
 logs
 /.vscode
-*checkpoints
+*logs
 *.log
 *.aux
 _minted-main
