@@ -1,4 +1,5 @@
 import numpy as np
+import tensorflow as tf
 
 
 def factor_squarely(n):
@@ -25,4 +26,22 @@ def ftr_cartesian_product(x, y):
     xb = np.swapaxes(np.broadcast_to(x, (yl, *x.shape)),
                      0, 1).reshape((xl*yl, *x.shape[1:]))
     yb = np.broadcast_to(y, (xl, *y.shape)).reshape((xl*yl, *y.shape[1:]))
-    return np.concatenate([xb, yb], axis=-1)
+    if len(x.shape) == len(y.shape):
+        return np.concatenate([xb, yb], axis=-1)
+    return (xb, yb)
+
+
+def split_all(arrays, n):
+    return (tuple(x[:n] for x in arrays), tuple(x[n:] for x in arrays))
+
+
+def to_one_hot(x, min, max):
+    return np.eye(max-min+1)[x-1]
+
+
+def from_one_hot(x, min, max, mix=True):
+    if mix:
+        weights = tf.range(min, max+1, dtype="float32")
+        return tf.reduce_sum(x * weights, axis=-1)
+    else:
+        return tf.math.argmax(x, axis=-1) + min
