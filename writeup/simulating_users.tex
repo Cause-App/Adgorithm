@@ -2,7 +2,7 @@
 
 We will need to be able to simulate users and their preferences in order to quantify how well this algorithm is likely to work in production. We will make use of the ADS-16 Computational Advertising Dataset\cite{ads16} for this task. This dataset contains (amongst other things) a set of answers given by 120 users to 10 personality questions. The answers are given on a scale from -2 to 2 (inclusive of both ends). Each user's age, income bracket, and gender are also included. In addition, the dataset contains a set of 300 advertisements split evenly into 20 categories. Crucially, this dataset also provides a rating from 1 to 5 (inclusive of both ends) that each user gave to each ad.
 
-We propose a method for modelling the relationship between a user's answers to the personality questions and that user's rating for a given ad. We will then use this to generate a set of simulated users, and we will use this model to determine their interaction with ads.
+We propose a method for modelling the relationship between the user data described above (the user's answers to the personality questions, age, income bracket, and gender) and that user's rating for a given ad. We will then generate a set of simulated users, and we will use this model to determine their interaction with ads.
 
 Note that it is not important for our purposes what the personality questions specifically are --- only that their answers hold some predictive power with respect to the ad ratings.
 
@@ -45,7 +45,7 @@ For each user we construct a ``raw'' user feature vector $f'_i$ to encapsulate a
     \end{bmatrix}
 \end{equation*}
 
-We refer to this as a ``raw'' vector because it requires some processing to become useful. If our hope is to eventually simulate users, it will involve generating one of these vectors. However, although the empirical distribution of each individual element can be found directly in our dataset, these features are not independent, and so cannot be sampled independently. This makes intuitive sense, as we might expect, for example, age to correlate with income bracket, but this intuition can be confirmed by inspecting the correlation matrix of these features across all users.
+We refer to this as a ``raw'' vector because it requires some processing to become useful. Our hope is to eventually simulate users, and this will involve sampling feature vectors from some known distribution. However, although the empirical distribution of each individual element can be found directly in our dataset, these features are not independent, and so cannot be sampled independently. This makes intuitive sense, as we might expect, for example, age to correlate with income bracket, but this intuition can be confirmed by inspecting the correlation matrix of these features across all users.
 
 \begin{figure}[H]
     \centering
@@ -53,11 +53,11 @@ We refer to this as a ``raw'' vector because it requires some processing to beco
     \caption{Correlation matrix for components of $f'_i$}
 \end{figure}
 
-We therefore perform principal component analysis on these features, yielding the user feature vector $f_i\in \mathbb{R}^{33}$, whose components are all independent.
+We therefore perform principal component analysis on these features, whose transform yields the user feature vectors $f_i\in \mathbb{R}^{33}$, whose components are all independent.
 
 We assume that each of the components are normally distributed, and we can estimate the parameters of the distributions across all of the users in the dataset.
 
-In addition to the data above, we also require the text present in each ad. With our dataset, we must rely on optical character recognition to extract the text from the images of the ads we are given. With this, we use a pre-trained GloVe\cite{glove} embedding of dimension $d_e$.
+In addition to the data above, we also require the text present in each ad. With our dataset, we must rely on optical character recognition to extract the text from the image of each ads we are given. We then use a pre-trained GloVe\cite{glove} word embedding of dimension $d_e$ to embed each word of the ad.
 
 This yields two tensors for the $k$\textsuperscript{th} ad, $\tensor*[_0]{v}{_k}$ and $\tensor*[_1]{v}{_k}$, which correspond to a one-hot vector encoding of $c_k$, and the ad's embedded word vectors respectively. The shape of $\tensor*[_0]{v}{_k}$ is $(20)$ and the shape of $\tensor*[_1]{v}{_k}$ is $(w_m, e_d)$ where $w_m$ is the maximum number of words in an ad.
 
@@ -82,4 +82,4 @@ The DNN has the following structure:
     \caption{The structure of a DNN which approximates a given user's rating for a given ad, with $w_m=50$, $e_d=25$}
 \end{figure}
 
-The hyperparameters can be found in the appendix and were determined using the Keras\cite{keras} implementation of the Hyperband algorithm\cite{hyperband}.
+The hyperparameters can be found in the appendix, and were determined using the Keras\cite{keras} implementation of the Hyperband algorithm\cite{hyperband}.
