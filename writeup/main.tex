@@ -1,4 +1,4 @@
-\documentclass[12pt]{article}
+\documentclass[hidelinks,12pt]{article}
 \usepackage[sc]{mathpazo}
 \usepackage[T1]{fontenc}
 \linespread{1.05}
@@ -10,8 +10,18 @@
 \usepackage{hyperref}
 \usepackage{titling}
 \usepackage{blindtext}
+\usepackage{bookmark}
 \usepackage[shortlabels]{enumitem}
 \usepackage[skip=20pt]{parskip}
+\usepackage{changepage}
+\usepackage{amsmath}
+\usepackage{graphicx}
+\usepackage{float}
+\usepackage{tensor}
+
+\graphicspath{ {./images/} }
+
+\newenvironment{gloss}{\begin{adjustwidth}{2cm}{2cm}\begin{equation*}\begin{aligned}}{\end{aligned}\end{equation*}\end{adjustwidth}}
 
 \newcommand{\mytitle}{Targeted Advertising With Total User Privacy}
 
@@ -42,4 +52,8 @@
 \end{abstract}
 \vspace{2em}
 \input{introduction.tex}
+\input{simulating_users.tex}
+\pagebreak
+\bibliographystyle{ieeetr}
+\bibliography{refs}
 \end{document}

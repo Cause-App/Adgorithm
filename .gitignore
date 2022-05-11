@@ -3,6 +3,12 @@ logs
 *logs
 *.log
 *.aux
+*.dvi
+*.glsdefs
+*.ist
+*.bbl
+*.blg
+*.glo
 _minted-main
 *.out
 *.zip
