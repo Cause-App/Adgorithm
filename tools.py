@@ -1,5 +1,11 @@
-import numpy as np
+from IPython.display import display, update_display, HTML, Image
+from tensorflow.keras.utils import plot_model
+from keras.callbacks import Callback
+import keras_tuner as kt
 import tensorflow as tf
+import numpy as np
+import uuid
+import os
 
 
 def factor_squarely(n):
@@ -31,6 +37,10 @@ def ftr_cartesian_product(x, y):
     return (xb, yb)
 
 
+def get_user_ad_ftr_product(user_ftrs, ad_ftrs):
+    return (ftr_cartesian_product(user_ftrs, ad_ftrs[0]), ftr_cartesian_product(user_ftrs, ad_ftrs[1])[-1])
+
+
 def split_all(arrays, n):
     return (tuple(x[:n] for x in arrays), tuple(x[n:] for x in arrays))
 
@@ -45,3 +55,52 @@ def from_one_hot(x, min, max, mix=True):
         return tf.reduce_sum(x * weights, axis=-1)
     else:
         return tf.math.argmax(x, axis=-1) + min
+
+
+class HyperbandWithBatchSize(kt.Hyperband):
+    def run_trial(self, trial, *args, **kwargs):
+        kwargs['batch_size'] = trial.hyperparameters.Int(
+            'batch_size', 32, 256, step=32)
+        return super().run_trial(trial, *args, **kwargs)
+
+
+class DisplayableCallback(Callback):
+    def __init__(self, name, create_display_immediately=True, **kwargs):
+        super().__init__(**kwargs)
+        self.name = name
+        self.display_id = f"{self.name}-{str(uuid.uuid1())}"
+        if create_display_immediately:
+            self.create_display()
+
+    def create_display(self):
+        display(HTML(self.name), display_id=self.display_id)
+
+    def update_display(self, obj):
+        update_display(obj, display_id=self.display_id)
+
+
+class ModelDisplayer(DisplayableCallback):
+    def __init__(self, **kwargs):
+        super().__init__("Model Topology", **kwargs)
+
+    def on_epoch_end(self, epoch, logs=None):
+        model_plot_filename = "data/tmp.png"
+        plot_model(self.model, to_file=model_plot_filename, show_shapes=True,
+                   show_layer_activations=True, show_layer_names=True)
+        self.update_display(Image(model_plot_filename))
+        os.unlink(model_plot_filename)
+        return super().on_epoch_end(epoch, logs=logs)
+
+
+class Printer(DisplayableCallback):
+    def __init__(self, **kwargs):
+        super().__init__("Epoch Data", **kwargs)
+
+    def on_epoch_end(self, epoch, logs=None):
+        header = f"Epoch {epoch}"
+        lines = []
+        if logs is not None:
+            for k, v in logs.items():
+                lines.append(f"{k}={v:.5f}")
+        self.update_display(HTML(f"<h3>{header}</h3>"+"<br/>".join(lines)))
+        return super().on_epoch_end(epoch, logs=logs)
